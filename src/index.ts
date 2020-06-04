@@ -218,6 +218,8 @@ export const ReactMediaRecorder = ({
     if (mediaRecorder.current) {
       setStatus("stopping");
       mediaRecorder.current.stop();
+      if (mediaStream.current)
+        mediaStream.current.getTracks().forEach((track) => track.stop());
     }
   };
 
