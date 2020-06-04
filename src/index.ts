@@ -179,12 +179,18 @@ export const ReactMediaRecorder = ({
   };
 
   const onRecordingStop = () => {
+                                     mediaStream.current &&
+      mediaStream.current.getTracks().forEach(function(track) {
+        track.stop()
+      })
+    mediaStream.current = null
     const blobProperty: BlobPropertyBag =
       blobPropertyBag || video ? { type: "video/mp4" } : { type: "audio/wav" };
     const blob = new Blob(mediaChunks.current, blobProperty);
     const url = URL.createObjectURL(blob);
     setStatus("stopped");
     setMediaBlobUrl(url);
+                                     mediaChunks.current = []
     onStop(url);
   };
 
