@@ -47,7 +47,7 @@ enum RecorderErrors {
   OverconstrainedError = "invalid_media_constraints",
   TypeError = "no_constraints",
   NONE = "",
-  NO_RECORDER = "recorder_error"
+  NO_RECORDER = "recorder_error",
 }
 
 export const ReactMediaRecorder = ({
@@ -57,7 +57,7 @@ export const ReactMediaRecorder = ({
   onStop = () => null,
   blobPropertyBag,
   screen = false,
-  mediaRecorderOptions = null
+  mediaRecorderOptions = null,
 }: ReactMediaRecorderProps) => {
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const mediaChunks = useRef<Blob[]>([]);
@@ -71,22 +71,22 @@ export const ReactMediaRecorder = ({
     setStatus("acquiring_media");
     const requiredMedia: MediaStreamConstraints = {
       audio: typeof audio === "boolean" ? !!audio : audio,
-      video: typeof video === "boolean" ? !!video : video
+      video: typeof video === "boolean" ? !!video : video,
     };
     try {
       if (screen) {
         //@ts-ignore
         const stream = (await window.navigator.mediaDevices.getDisplayMedia({
-          video: video || true
+          video: video || true,
         })) as MediaStream;
         if (audio) {
           const audioStream = await window.navigator.mediaDevices.getUserMedia({
-            audio
+            audio,
           });
 
           audioStream
             .getAudioTracks()
-            .forEach(audioTrack => stream.addTrack(audioTrack));
+            .forEach((audioTrack) => stream.addTrack(audioTrack));
         }
         mediaStream.current = stream;
       } else {
@@ -117,7 +117,7 @@ export const ReactMediaRecorder = ({
     const checkConstraints = (mediaType: MediaTrackConstraints) => {
       const supportedMediaConstraints = navigator.mediaDevices.getSupportedConstraints();
       const unSupportedConstraints = Object.keys(mediaType).filter(
-        constraint =>
+        (constraint) =>
           !(supportedMediaConstraints as { [key: string]: any })[constraint]
       );
 
@@ -179,18 +179,18 @@ export const ReactMediaRecorder = ({
   };
 
   const onRecordingStop = () => {
-                                     mediaStream.current &&
-      mediaStream.current.getTracks().forEach(function(track) {
-        track.stop()
-      })
-    mediaStream.current = null
+    mediaStream.current &&
+      mediaStream.current.getTracks().forEach(function (track) {
+        track.stop();
+      });
+    mediaStream.current = null;
     const blobProperty: BlobPropertyBag =
       blobPropertyBag || video ? { type: "video/mp4" } : { type: "audio/wav" };
     const blob = new Blob(mediaChunks.current, blobProperty);
     const url = URL.createObjectURL(blob);
     setStatus("stopped");
     setMediaBlobUrl(url);
-                                     mediaChunks.current = []
+    mediaChunks.current = [];
     onStop(url);
   };
 
@@ -199,7 +199,7 @@ export const ReactMediaRecorder = ({
     if (mediaStream.current) {
       mediaStream.current
         .getAudioTracks()
-        .forEach(audioTrack => (audioTrack.enabled = !mute));
+        .forEach((audioTrack) => (audioTrack.enabled = !mute));
     }
   };
 
@@ -234,6 +234,6 @@ export const ReactMediaRecorder = ({
     isAudioMuted,
     previewStream: mediaStream.current
       ? new MediaStream(mediaStream.current.getVideoTracks())
-      : null
+      : null,
   });
 };
